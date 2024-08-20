@@ -23,14 +23,16 @@ df = pd.read_csv('Preprocessed data.csv')  # Preprocessed music data with numeri
 
 # Load the trained KNN model from the pickle file
 with open('knn_model.pkl', 'rb') as f:
-    knn10 = pickle.load(f)
+    spotify = pickle.load(f)
 
 # Input field for song name
 song_name = st.text_input("Enter a song that you like:")
 
+knn10 = NearestNeighbors(metric='euclidean', algorithm='auto', n_neighbors=11)
+
 # If the user has entered a song name, perform the recommendation
 if song_name:
-    recommended_songs = recommender(song_name, df, knn10)
+    recommended_songs = spotify.recommender(song_name, df, knn10)
     st.write("\n", recommended_songs.head(10))
 
 songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
