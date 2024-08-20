@@ -21,54 +21,68 @@ option = st.sidebar.selectbox(
 # Load your preprocessed dataset
 df = pd.read_csv('Preprocessed data.csv')  # Preprocessed music data with numerical features
 
-# Define the Recommender class
-class Recommender:
-    def __init__(self):
-        self.knn = NearestNeighbors(n_neighbors=11, metric='euclidean')
-    
-    def fit(self, data):
-        self.data = data
-        self.features = data.select_dtypes(np.number).drop(columns=['year', 'cluster'])
-        self.knn.fit(self.features)
-    
-    def recommender(self, song_name, recommendation_set):
-        idx = process.extractOne(song_name, recommendation_set['name'])[2]
-        print('Song Selected:', recommendation_set['name'][idx], 'Index:', idx)
-        print('Searching for recommendations...')
-        
-        query_cluster = recommendation_set['cluster'][idx]
-        filtered_data = recommendation_set[recommendation_set['cluster'] == query_cluster]
-        filtered_data = filtered_data.reset_index(drop=True)
-        
-        try:
-            new_idx = filtered_data[filtered_data['name'] == recommendation_set['name'][idx]].index[0]
-        except IndexError:
-            raise IndexError("The selected song is not found within the filtered cluster data.")
-
-        query_point_filtered = pd.DataFrame([self.features.iloc[new_idx]], columns=self.features.columns)
-        distances, indices = self.knn.kneighbors(query_point_filtered)
-
-        recommendations = []
-        for i in indices[0]:
-            if i != new_idx:
-                recommendations.append({
-                    'name': filtered_data.iloc[i]['name'],
-                    'artist': filtered_data.iloc[i]['artist'],
-                    'tags': filtered_data.iloc[i]['tags']
-                })
-
-        return pd.DataFrame(recommendations)
-
 # Load the trained KNN model from the pickle file
-with open('knn_model.pkl', 'rb') as f:
-    spotify = pickle.load(f)
+# with open('knn_model.pkl', 'rb') as f:
+#    spotify = pickle.load(f)
+
+def recommender(song_name, recommendation_set):
+    # Find the index of the song using fuzzy matching
+    idx = process.extractOne(song_name, recommendation_set['name'])[2]
+    print('Song Selected:', recommendation_set['name'][idx], 'Index:', idx)
+    print('Searching for recommendations...')
+    
+    # Determine the cluster of the selected song
+    query_cluster = recommendation_set['cluster'][idx]
+
+    # Filter the dataset to include only points from the same cluster
+    filtered_data = recommendation_set[recommendation_set['cluster'] == query_cluster]
+
+    # Reset the index of the filtered data for consistency
+    filtered_data = filtered_data.reset_index(drop=True)
+    
+    # Attempt to find the index of the selected song within the filtered dataset
+    try:
+        new_idx = filtered_data[filtered_data['name'] == recommendation_set['name'][idx]].index[0]
+    except IndexError:
+        raise IndexError("The selected song is not found within the filtered cluster data.")
+
+    # Find nearest 10 neighbors, let knn decide algo based on data
+    knn5 = NearestNeighbors(metric='euclidean', algorithm='auto', n_neighbors=6) 
+    knn10 = NearestNeighbors(metric='euclidean', algorithm='auto', n_neighbors=11) # Add 1 to account for the selected song itself
+    knn20 = NearestNeighbors(metric='euclidean', algorithm='auto', n_neighbors=21)
+    # knn10 = NearestNeighbors(metric='cosine', algorithm='auto', n_neighbors=10)
+    
+    model = knn10
+
+    # Prepare features for KNN
+    features = filtered_data.select_dtypes(np.number).drop(columns=['year', 'cluster'])
+    model.fit(features)
+
+    # Convert the query point to a DataFrame with the same column names as `features`
+    query_point_filtered = pd.DataFrame([features.iloc[new_idx]], columns=features.columns)
+
+    # Find the k nearest neighbors within the same cluster
+    distances, indices = model.kneighbors(query_point_filtered)
+
+    # Prepare recommendations
+    recommendations = []
+    for i in indices[0]:
+        if i != new_idx:  # Exclude the selected song itself
+            recommendations.append({
+                'name': filtered_data.iloc[i]['name'],
+                'artist': filtered_data.iloc[i]['artist'],
+                'tags': filtered_data.iloc[i]['tags']
+            })
+
+    rec_df = pd.DataFrame(recommendations)
+    return rec_df
 
 # Input field for song name
 song_name = st.text_input("Enter a song that you like:")
 
 # If the user has entered a song name, perform the recommendation
 if song_name:
-    recommended_songs = spotify.recommender(song_name, df)
+    recommended_songs = recommender(song_name, df)
     st.write("\n", recommended_songs.head(10))
 
 songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
