@@ -89,7 +89,7 @@ def recommender(song_name, recommendation_set, model):
 # If the user has entered a song name, perform the recommendation
 if song_input:
     recommended_songs = recommender(song_input, X, knn10)
-    # st.write("\n".join(recommended_songs), "\n")
+    st.write("\n".join(recommended_songs), "\n")
 
 
 songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
