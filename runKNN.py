@@ -100,7 +100,7 @@ if song_name:
     # Display the filtered DataFrame with checkboxes
     selected_indices = []
     for idx, row in filtered_df.iterrows():
-        if st.checkbox(f"{row[Song]} by {row[Artist]}", key=idx):
+        if st.checkbox(f"{row['Song']} by {row['Artist']}", key=idx):
             selected_indices.append(idx)
 
     # Filter selected songs
