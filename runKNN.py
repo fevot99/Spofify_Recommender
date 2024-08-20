@@ -9,7 +9,7 @@ from sklearn.neighbors import NearestNeighbors
 
 # Title and description of the Streamlit app
 st.title('Music Recommender System')
-st.write("Enter a song name and get 10 similar song recommendations based on content similarity")
+st.write("Enter a song name to get similar song recommendations based on music content similarity")
 
 # Adding User ID input
 # st.header("Step 1:")
@@ -21,18 +21,14 @@ st.write("Enter a song name and get 10 similar song recommendations based on con
 #     st.write.error("Please enter a valid number")
 
 # Dropdown for selecting User ID
-st.subheader("Select User ID")
+# st.subheader("Select User ID")
 user_id = st.selectbox(
-    'Please select your User ID',
+    'Please log in with your User ID',
     options=[1001, 1002, 1003, 1004, 1005]
 )
 
 # Load your preprocessed dataset
 df = pd.read_csv('Preprocessed data.csv')  # Preprocessed music data with numerical features
-
-# Load the trained KNN model from the pickle file
-# with open('knn_model.pkl', 'rb') as f:
-#    spotify = pickle.load(f)
 
 def recommender(song_name, recommendation_set):
     # Find the index of the song using fuzzy matching
