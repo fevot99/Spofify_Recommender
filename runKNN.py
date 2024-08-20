@@ -19,7 +19,7 @@ option = st.sidebar.selectbox(
 # Age=st.sidebar.radio('Please enter your Age Group',options=['Under 20','20+','30+','40+','Over 50'])
 
 # Load your preprocessed dataset
-df = pd.read_csv('testpca.csv') # Preprocessed music data with numerical features
+df = pd.read_csv('Preprocessed data.csv') # Preprocessed music data with numerical features
 
 # Load the trained KNN model from the pickle file
 with open('knn_model.pkl', 'rb') as f:
