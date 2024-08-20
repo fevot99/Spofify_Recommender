@@ -15,10 +15,10 @@ st.write("Enter a song name and get 10 similar song recommendations based on con
 st.header("Step 1:")
 user_id = st.write('Please enter your User ID', '')
 
-try:
-    user_id = int(user_id)
-except ValueError:
-    st.write.error("Please enter a valid number")
+# try:
+#     user_id = int(user_id)
+# except ValueError:
+#     st.write.error("Please enter a valid number")
 
 # # Adding a sidebar
 # st.sidebar.title("Sidebar")
