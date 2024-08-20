@@ -11,6 +11,15 @@ from sklearn.neighbors import NearestNeighbors
 st.title('Music Recommender System')
 st.write("Enter a song name and get 10 similar song recommendations based on content similarity")
 
+# Adding a sidebar for User ID input
+st.write.title("Step 1:")
+user_id = st.write('Please enter your User ID', '')
+
+try:
+    user_id = int(user_id)
+except ValueError:
+    st.write.error("Please enter a valid number")
+
 # # Adding a sidebar
 # st.sidebar.title("Sidebar")
 # option = st.sidebar.selectbox(
@@ -88,14 +97,11 @@ song_name = st.text_input("Enter a song that you like:")
 
 if song_name:
     table_df = recommender(song_name, df)
-    
+     st.write("Sample data in filtered_df:",table_df.head())
+   
     # Filter to show only songs 2 to 6 (index 1 to 5)
     filtered_df = table_df.iloc[1:11].reset_index(drop=True)
     
-    # Debugging: Print DataFrame columns and sample data
-    st.write("Columns in filtered_df:", filtered_df.columns)
-    st.write("Sample data in filtered_df:", filtered_df.head())
-
     # Display the filtered table with checkboxes for selection
     st.write("Step 3: You may select any recommended songs below and click on the 'Add to Playlist' button to create your personal playlist")
 
