@@ -28,51 +28,10 @@ with open('knn_model.pkl', 'rb') as f:
 # Input field for song name
 song_input = st.text_input("Enter a song name:")
 
-def recommender(song_name, recommendation_set, model):
-    # Find the index of the song using fuzzy matching
-    idx = process.extractOne(song_name, recommendation_set['name'])[2]
-    st.write('Song Selected:', recommendation_set['name'][idx], 'Index:', idx)
-    st.write('Searching for recommendations...')
-    
-    # Determine the cluster of the selected song
-    query_cluster = recommendation_set['cluster'][idx]
-
-    # Filter the dataset to include only points from the same cluster
-    filtered_data = recommendation_set[recommendation_set['cluster'] == query_cluster]
-
-    # Reset the index of the filtered data for consistency
-    filtered_data = filtered_data.reset_index(drop=True)
-    
-    # Attempt to find the index of the selected song within the filtered dataset
-    try:
-        new_idx = filtered_data[filtered_data['name'] == recommendation_set['name'][idx]].index[0]
-    except IndexError:
-        st.error("The selected song is not found within the filtered cluster data.")
-        return []
-
-    # Prepare features for KNN
-    features = filtered_data.select_dtypes(np.number).drop(columns=['year', 'cluster'])
-    
-    # Fit the model (not necessary to fit each time, but included for clarity)
-    model.fit(features)
-
-    # Convert the query point to a DataFrame with the same column names as features
-    query_point_filtered = pd.DataFrame([features.iloc[new_idx]], columns=features.columns)
-
-    # Find the k nearest neighbors within the same cluster
-    distances, indices = model.kneighbors(query_point_filtered)
-
-    # Prepare recommendations
-    recommendations = []
-    for i in indices[0]:
-        if i != new_idx:  # Exclude the selected song itself
-            recommendations.append({
-                'name': filtered_data.iloc[i]['name'],
-                'artist': filtered_data.iloc[i]['artist'],
-                'tags': filtered_data.iloc[i]['tags']
-            })
-
-    return recommendations
+# If the user has entered a song name, perform the recommendation
+if song_name:
+    recommended_songs = recommender(song_name, df, knn10)
+    st.write("\n", recommended_songs.head(10))
 
 songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
 
