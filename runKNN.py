@@ -28,10 +28,11 @@ with open('knn_model.pkl', 'rb') as f:
 # Input field for song name
 song_input = st.text_input("Enter a song name:")
 
-# Recommender Function
 def recommender(song_name, recommendation_set, model):
     # Find the index of the song using fuzzy matching
     idx = process.extractOne(song_name, recommendation_set['name'])[2]
+    st.write('Song Selected:', recommendation_set['name'][idx], 'Index:', idx)
+    st.write('Searching for recommendations...')
     
     # Determine the cluster of the selected song
     query_cluster = recommendation_set['cluster'][idx]
@@ -46,12 +47,16 @@ def recommender(song_name, recommendation_set, model):
     try:
         new_idx = filtered_data[filtered_data['name'] == recommendation_set['name'][idx]].index[0]
     except IndexError:
-        raise IndexError("The selected song is not found within the filtered cluster data.")
+        st.error("The selected song is not found within the filtered cluster data.")
+        return []
 
     # Prepare features for KNN
     features = filtered_data.select_dtypes(np.number).drop(columns=['year', 'cluster'])
     
-    # Convert the query point to a DataFrame with the same column names as `features`
+    # Fit the model (not necessary to fit each time, but included for clarity)
+    model.fit(features)
+
+    # Convert the query point to a DataFrame with the same column names as features
     query_point_filtered = pd.DataFrame([features.iloc[new_idx]], columns=features.columns)
 
     # Find the k nearest neighbors within the same cluster
@@ -67,16 +72,7 @@ def recommender(song_name, recommendation_set, model):
                 'tags': filtered_data.iloc[i]['tags']
             })
 
-    rec_df = pd.DataFrame(recommendations)
-    return rec_df
-
-# If the user has entered a song name, perform the recommendation
-if song_input:
-    recommended_songs = recommender(song_input, df, knn10)
-    if not recommended_songs.empty:
-        st.write(recommended_songs)
-    else:
-        st.write("No recommendations found.")
+    return recommendations
 
 songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
 
