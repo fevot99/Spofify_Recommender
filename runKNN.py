@@ -12,22 +12,20 @@ st.title('Music Recommender System')
 st.write("Enter a song name and get 10 similar song recommendations based on content similarity")
 
 # Adding User ID input
-st.header("Step 1:")
-user_id = st.write('Please enter your User ID', '')
+# st.header("Step 1:")
+# user_id = st.write('Please enter your User ID', '')
 
 # try:
 #     user_id = int(user_id)
 # except ValueError:
 #     st.write.error("Please enter a valid number")
 
-# # Adding a sidebar
-# st.sidebar.title("Sidebar")
-# option = st.sidebar.selectbox(
-#     'Please enter your User ID',
-#     list(range(1001, 1006)))
-   
-# st.image('pic.jpg')
-# Age=st.sidebar.radio('Please enter your Age Group',options=['Under 20','20+','30+','40+','Over 50'])
+# Dropdown for selecting User ID
+st.subheader("Select User ID")
+user_id = st.selectbox(
+    'Please select your User ID',
+    options=[1001, 1002, 1003, 1004, 1005]
+)
 
 # Load your preprocessed dataset
 df = pd.read_csv('Preprocessed data.csv')  # Preprocessed music data with numerical features
@@ -97,7 +95,7 @@ song_name = st.text_input("Enter a song that you like:")
 
 if song_name:
     table_df = recommender(song_name, df)
-    st.write(table_df.head(10))
+    st.write("These are the recommended songs that you may like: \n", table_df.head(10))
    
     # Filter to show only songs 2 to 6 (index 1 to 5)
     filtered_df = table_df.iloc[1:11].reset_index(drop=True)
@@ -173,3 +171,14 @@ st.write(playlist_df)
 
 # Display the selected value
 # st.write("You have given a rating of ", rating)
+
+
+# # Adding a sidebar
+# st.sidebar.title("Sidebar")
+# option = st.sidebar.selectbox(
+#     'Please enter your User ID',
+#     list(range(1001, 1006)))
+# st.image('pic.jpg')
+# Age=st.sidebar.radio('Please enter your Age Group',options=['Under 20','20+','30+','40+','Over 50'])
+
+
