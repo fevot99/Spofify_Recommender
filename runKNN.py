@@ -97,13 +97,13 @@ song_name = st.text_input("Enter a song that you like:")
 
 if song_name:
     table_df = recommender(song_name, df)
-     st.write("Sample data in filtered_df:",table_df.head())
+    st.write(table_df.head(10))
    
     # Filter to show only songs 2 to 6 (index 1 to 5)
     filtered_df = table_df.iloc[1:11].reset_index(drop=True)
     
     # Display the filtered table with checkboxes for selection
-    st.write("Step 3: You may select any recommended songs below and click on the 'Add to Playlist' button to create your personal playlist")
+    st.write("You may select any recommended songs below and click on the 'Add to Playlist' button to create your personal playlist")
 
     # Display the filtered DataFrame with checkboxes
     selected_indices = []
