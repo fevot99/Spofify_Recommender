@@ -11,7 +11,7 @@ from sklearn.neighbors import NearestNeighbors
 st.title('Music Recommender System')
 st.write("Enter a song name and get 10 similar song recommendations based on content similarity")
 
-# Adding a sidebar for User ID input
+# Adding User ID input
 st.write.title("Step 1:")
 user_id = st.write('Please enter your User ID', '')
 
