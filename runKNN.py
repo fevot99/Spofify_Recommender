@@ -76,15 +76,16 @@ def recommender(song_name, recommendation_set, model):
                 'tags': filtered_data.iloc[i]['tags']
             })
 
-    rec_df = pd.DataFrame(recommendations)
+    return recommendations
+    # rec_df = pd.DataFrame(recommendations)
     # Output the recommended songs
-    print("Recommended Songs:")
-    print(rec_df.head(10))
+    # print("Recommended Songs:")
+    # print(rec_df.head(10))
 
-    print("Song Name \ Artist \ Genre")
-    for rec in recommendations:
+    # print("Song Name \ Artist \ Genre")
+    # for rec in recommendations:
     #   print([rec['name'], rec['artist'], rec['tags']])
-        print(rec['name'] + " \ " + rec['artist'] + " \ " + rec['tags'])
+    #    print(rec['name'] + " \ " + rec['artist'] + " \ " + rec['tags'])
 
 # If the user has entered a song name, perform the recommendation
 if song_input:
