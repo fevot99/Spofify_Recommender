@@ -21,6 +21,44 @@ option = st.sidebar.selectbox(
 # Load your preprocessed dataset
 df = pd.read_csv('Preprocessed data.csv')  # Preprocessed music data with numerical features
 
+# Define the Recommender class
+class Recommender:
+    def __init__(self):
+        self.knn = NearestNeighbors(n_neighbors=11, metric='euclidean')
+    
+    def fit(self, data):
+        self.data = data
+        self.features = data.select_dtypes(np.number).drop(columns=['year', 'cluster'])
+        self.knn.fit(self.features)
+    
+    def recommender(self, song_name, recommendation_set):
+        idx = process.extractOne(song_name, recommendation_set['name'])[2]
+        print('Song Selected:', recommendation_set['name'][idx], 'Index:', idx)
+        print('Searching for recommendations...')
+        
+        query_cluster = recommendation_set['cluster'][idx]
+        filtered_data = recommendation_set[recommendation_set['cluster'] == query_cluster]
+        filtered_data = filtered_data.reset_index(drop=True)
+        
+        try:
+            new_idx = filtered_data[filtered_data['name'] == recommendation_set['name'][idx]].index[0]
+        except IndexError:
+            raise IndexError("The selected song is not found within the filtered cluster data.")
+
+        query_point_filtered = pd.DataFrame([self.features.iloc[new_idx]], columns=self.features.columns)
+        distances, indices = self.knn.kneighbors(query_point_filtered)
+
+        recommendations = []
+        for i in indices[0]:
+            if i != new_idx:
+                recommendations.append({
+                    'name': filtered_data.iloc[i]['name'],
+                    'artist': filtered_data.iloc[i]['artist'],
+                    'tags': filtered_data.iloc[i]['tags']
+                })
+
+        return pd.DataFrame(recommendations)
+
 # Load the trained KNN model from the pickle file
 with open('knn_model.pkl', 'rb') as f:
     spotify = pickle.load(f)
