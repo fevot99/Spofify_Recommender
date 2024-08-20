@@ -26,7 +26,7 @@ with open('knn_model.pkl', 'rb') as f:
     knn10 = pickle.load(f)
 
 # Input field for song name
-song_input = st.text_input("Enter a song name:")
+song_name = st.text_input("Enter a song that you like:")
 
 # If the user has entered a song name, perform the recommendation
 if song_name:
