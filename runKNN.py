@@ -28,11 +28,9 @@ with open('knn_model.pkl', 'rb') as f:
 # Input field for song name
 song_name = st.text_input("Enter a song that you like:")
 
-# knn10 = NearestNeighbors(metric='euclidean', algorithm='auto', n_neighbors=11)
-
 # If the user has entered a song name, perform the recommendation
 if song_name:
-    recommended_songs = spotify.recommender(song_name, df, spotify)
+    recommended_songs = spotify.recommender(song_name, df)
     st.write("\n", recommended_songs.head(10))
 
 songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
