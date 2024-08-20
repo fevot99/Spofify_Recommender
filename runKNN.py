@@ -19,27 +19,19 @@ option = st.sidebar.selectbox(
 # Age=st.sidebar.radio('Please enter your Age Group',options=['Under 20','20+','30+','40+','Over 50'])
 
 # Load your preprocessed dataset
-df = pd.read_csv('Preprocessed data.csv') # Preprocessed music data with numerical features
+df = pd.read_csv('Preprocessed data.csv')  # Preprocessed music data with numerical features
 
 # Load the trained KNN model from the pickle file
 with open('knn_model.pkl', 'rb') as f:
     knn10 = pickle.load(f)
 
-# Use the relevant features for similarity calculation
-# features = ['danceability', 'energy', 'acousticness', 'tempo']
-# X = df[features]
-X = df
-
 # Input field for song name
 song_input = st.text_input("Enter a song name:")
-# st.write(song_input)
 
 # Recommender Function
 def recommender(song_name, recommendation_set, model):
     # Find the index of the song using fuzzy matching
     idx = process.extractOne(song_name, recommendation_set['name'])[2]
-    print('Song Selected:', recommendation_set['name'][idx], 'Index:', idx)
-    print('Searching for recommendations...')
     
     # Determine the cluster of the selected song
     query_cluster = recommendation_set['cluster'][idx]
@@ -58,8 +50,7 @@ def recommender(song_name, recommendation_set, model):
 
     # Prepare features for KNN
     features = filtered_data.select_dtypes(np.number).drop(columns=['year', 'cluster'])
-    model.fit(features)
-
+    
     # Convert the query point to a DataFrame with the same column names as `features`
     query_point_filtered = pd.DataFrame([features.iloc[new_idx]], columns=features.columns)
 
@@ -76,22 +67,16 @@ def recommender(song_name, recommendation_set, model):
                 'tags': filtered_data.iloc[i]['tags']
             })
 
-    return recommendations
-    # rec_df = pd.DataFrame(recommendations)
-    # Output the recommended songs
-    # print("Recommended Songs:")
-    # print(rec_df.head(10))
-
-    # print("Song Name \ Artist \ Genre")
-    # for rec in recommendations:
-    #   print([rec['name'], rec['artist'], rec['tags']])
-    #    print(rec['name'] + " \ " + rec['artist'] + " \ " + rec['tags'])
+    rec_df = pd.DataFrame(recommendations)
+    return rec_df
 
 # If the user has entered a song name, perform the recommendation
 if song_input:
-    recommended_songs = recommender(song_input, X, knn10)
-    st.write("\n".join(recommended_songs), "\n")
-
+    recommended_songs = recommender(song_input, df, knn10)
+    if not recommended_songs.empty:
+        st.write(recommended_songs)
+    else:
+        st.write("No recommendations found.")
 
 songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
 
