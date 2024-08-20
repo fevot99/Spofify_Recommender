@@ -142,21 +142,9 @@ if song_name:
             st.write("No songs selected, please try again.")
 
 
-
-
-songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
-
+# songs = ["Song 1","Song 2","Song3"]
 # Create a radio button for each song
-selected_songs = st.radio("Select a song to add to your playlist:", options=songs)
-
-# Button to submit the selection
-if st.button("Add to Playlist"):
-    # Here you can store the selected song as needed
-    st.write(f"You have added '{selected_songs}' to your playlist!")
-
-# Adding a button
-if st.button('Click to refresh playlist'):
-    st.write('Updated Playlist')
+# selected_songs = st.radio("Select a song to add to your playlist:", options=songs)
 
 st.write("Here is your current playlist:")
 # Dataframe display
