@@ -9,7 +9,7 @@ from sklearn.neighbors import NearestNeighbors
 
 # Title and description of the Streamlit app
 st.title('Music Recommender System')
-st.write("Enter a song name and get 5 similar song recommendations based on content similarity")
+st.write("Enter a song name and get 10 similar song recommendations based on content similarity")
 
 # # Adding a sidebar
 # st.sidebar.title("Sidebar")
@@ -100,7 +100,7 @@ if song_name:
     # Display the filtered DataFrame with checkboxes
     selected_indices = []
     for idx, row in filtered_df.iterrows():
-        if st.checkbox(f"{row.Song} by {row.Artist}", key=idx):
+        if st.checkbox(f"{row[Song]} by {row[Artist]}", key=idx):
             selected_indices.append(idx)
 
     # Filter selected songs
