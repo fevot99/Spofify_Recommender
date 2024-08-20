@@ -12,7 +12,7 @@ st.title('Music Recommender System')
 st.write("Enter a song name and get 10 similar song recommendations based on content similarity")
 
 # Adding User ID input
-st.write.title("Step 1:")
+st.header("Step 1:")
 user_id = st.write('Please enter your User ID', '')
 
 try:
