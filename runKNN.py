@@ -11,11 +11,11 @@ from sklearn.neighbors import NearestNeighbors
 st.title('Music Recommender System')
 st.write("Enter a song name and get 5 similar song recommendations based on content similarity")
 
-# Adding a sidebar
-st.sidebar.title("Sidebar")
-option = st.sidebar.selectbox(
-    'Please enter your User ID',
-    list(range(1001, 1006)))
+# # Adding a sidebar
+# st.sidebar.title("Sidebar")
+# option = st.sidebar.selectbox(
+#     'Please enter your User ID',
+#     list(range(1001, 1006)))
    
 # st.image('pic.jpg')
 # Age=st.sidebar.radio('Please enter your Age Group',options=['Under 20','20+','30+','40+','Over 50'])
@@ -79,13 +79,59 @@ def recommender(song_name, recommendation_set):
     rec_df = pd.DataFrame(recommendations)
     return rec_df
 
+# Initialize session state for playlist
+if 'playlist' not in st.session_state:
+    st.session_state.playlist = pd.DataFrame(columns=['Song', 'Artist', 'Music Genre Tags', 'Original Song'])
+
 # Input field for song name
 song_name = st.text_input("Enter a song that you like:")
 
 # If the user has entered a song name, perform the recommendation
 if song_name:
-    recommended_songs = recommender(song_name, df)
-    st.write("\n", recommended_songs.head(10))
+    table_df = recommender(song_name, df)
+    # st.write("\n", table_df.head(10))
+
+    # Filter to show only songs 2 to 6 (index 1 to 5)
+    filtered_df = table_df.iloc[1:11].reset_index(drop=True)
+
+    # Display the filtered table with checkboxes for selection
+    st.write("Step 3: You may select any recommended songs below and click on the 'Add to Playlist' button to create your personal playlist")
+
+    # Display the filtered DataFrame with checkboxes
+    selected_indices = []
+    for idx, row in filtered_df.iterrows():
+        if st.checkbox(f"{row.Song} by {row.Artist}", key=idx):
+            selected_indices.append(idx)
+
+    # Filter selected songs
+    selected_songs = filtered_df.loc[selected_indices]
+
+    # If the user clicks the "Add to Playlist" button, show the selected songs
+    if st.button('Add to Playlist'):
+        if not selected_songs.empty:
+            # Add the original song to the playlist DataFrame
+            original_song = pd.DataFrame([{
+                'Song': df['name'][original_idx],
+                'Artist': df['artist'][original_idx],
+                'Music Genre Tags': df['tags'][original_idx],
+                'Original Song': True
+            }])
+            
+            st.write("Your Playlist")
+            st.dataframe(selected_songs, use_container_width=True, hide_index=True)
+            # Update session state playlist
+            st.session_state.playlist = pd.concat([st.session_state.playlist, original_song, selected_songs], ignore_index=True)
+            # Save the updated playlist to a CSV file
+            if user_id:
+                filename = f'Playlist_{user_id}.csv'
+                st.session_state.playlist.to_csv(filename, index=False)
+                st.write(f"Playlist saved as {filename}")
+        else:
+            st.write("No songs selected, please try again.")
+
+
+
+
 
 songs = ["Song 1","Song 2","Song 3","Song 4","Song 5","Song 6","Song 7","Song 8","Song 9","Song 10"]
 
